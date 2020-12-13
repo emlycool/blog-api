@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -56,7 +57,7 @@ class LoginController extends Controller
         return $request->wantsJson()
                     ? new JsonResponse([
                         'message' => 'logged in successfully',
-                        'user' => $request->user()
+                        'user' => new UserResource($request->user())
                     ], 201)
                     : redirect()->intended($this->redirectPath());
     }
@@ -77,7 +78,7 @@ class LoginController extends Controller
 
         return new JsonResponse([
                 'message' => 'logged out'
-            ], 201);
+            ], 204);
            
     }
 }

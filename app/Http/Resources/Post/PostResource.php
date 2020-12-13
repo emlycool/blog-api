@@ -29,7 +29,8 @@ class PostResource extends JsonResource
             'publish_at' => $this->publish_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-
+            'likes' => $this->total_likes ?? $this->likes()->where('liked', true)->count(),
+            'is_liked' => auth()->user()? $this->isLikedByUser(): false,
         ];
     }
 

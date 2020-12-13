@@ -17,6 +17,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Route::group(['prefix'=> 'api/v1/'], function(){
+//     Route::get('login/{provider}', 'Auth\\SocialAuthController@redirectToProvider');
+//     Route::get('login/{provider}/callback', 'Auth\\SocialAuthController@handleProviderCallback');
+// });
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

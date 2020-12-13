@@ -3,13 +3,19 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Traits\Likeable;
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
-    use HasFactory; use SoftDeletes;
+    use HasFactory,
+        SoftDeletes,
+        Likeable,
+        Searchable;
 
     protected $casts = [
         'images' => 'array',
@@ -81,4 +87,24 @@ class Post extends Model
             return $query->where('category_id', $category);
         }
     }
+
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+
+        // Customize array...
+
+        return $array;
+    }
+
+    
+    /**
+     * Get all of the post's comments.
+     */
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    
 }

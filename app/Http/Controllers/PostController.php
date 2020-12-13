@@ -7,11 +7,14 @@ use App\Models\Tag;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Events\PostCommented;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\CommentResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Post\PostResource;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\Post\CreatePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
 
@@ -35,6 +38,7 @@ class PostController extends Controller
             ->tag()
             ->category()
             ->searched()
+            ->withLikesCount()
             ->paginate(2)
         );
     }
@@ -124,7 +128,7 @@ class PostController extends Controller
 
         // map imagespath from file uploads
         if($request->images){
-            $data['images'] = $this->uploadPostImages($data['images']);
+            $data['images'] =  [...$this->uploadPostImages($data['images']), ...$post->images];
         }
         
         $data['publish_at'] = Carbon::parse($data['publish_at'])->toDateTimeString();
@@ -178,8 +182,10 @@ class PostController extends Controller
     private function uploadPostImages(array $images){
         // map imagespath from file uploads
         $imagesPath = collect([]);
-        collect($images)->each( function (UploadedFile $image) use(&$imagesPath){
-            $path = $image->store('posts', 'public');
+        collect($images)->each( function ($image) use(&$imagesPath){
+            if($image instanceof UploadedFile){
+                $path = $image->store('posts', 'public');
+            }
             $imagesPath->push($path);
         });
         return $imagesPath->toArray();
@@ -197,10 +203,37 @@ class PostController extends Controller
 
         }
         $imagesNotDeleted = collect($post->images)
-                                    ->filter( fn ($imagePath) => in_array($imagePath, $deletedImagePaths) )
+                                    ->filter( fn ($imagePath) => !in_array($imagePath, $deletedImagePaths) )
                                     ->toArray();
 
         $post->images = $imagesNotDeleted;
         $post->save();
     }
+
+    public function like(Post $post){
+        // print $post->isLikedByUser();
+
+        $post->like();
+        return (new PostResource($post) )->response()->setStatusCode(200);
+    }
+
+    public function unlike($post){
+        $post->like();
+        return (new PostResource($post) )->response()->setStatusCode(200);
+    }
+
+    public function comment(Request $request, Post $post){
+        // print $post;
+        $validatedData = Validator::make($request->all(), [
+            'comment' => 'required'
+        ])->validate();
+        $comment = $post->comments()->create([
+                        'user_id' => $request->user()->id,
+                        'comments' => $validatedData['comment']
+                    ]);
+        PostCommented::dispatch($comment);
+        return (new CommentResource($comment) )->response()->setStatusCode(200);
+    }
+
+    
 }

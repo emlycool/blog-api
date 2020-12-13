@@ -23,13 +23,13 @@ class PostFactory extends Factory
     public function definition()
     {
         return [
-            'title' => $name = 'lorem ipsum',
-            'description' => 'lorem ipsum',
-            'content' => 'lorem ipsum',
+            'title' => $name = $this->faker->name,
+            'description' => $this->faker->sentence,
+            'content' => $this->faker->sentence,
             'images' => [1, 3],
-            'user_id' => 1,
+            'user_id' => rand(1, 10),
             'slug' => Str::slug($name),
-            'category_id' => 1,
+            'category_id' => rand(1,10),
         ];
     }
 }

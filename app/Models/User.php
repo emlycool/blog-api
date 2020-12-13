@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Post;
+use App\Models\Role;
+use App\Models\SocialAccount;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Thomaswelton\LaravelGravatar\Facades\Gravatar;
@@ -59,10 +61,15 @@ class User extends Authenticatable
     }
 
     public function role(){
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class, 'role_id');
     }
 
     public function getIsAdminAttribute(){
-        return $this->role->name == "admin";
+        // return $this->role? $this->role->name == "admin": false;
+        return $this->role == "admin";
+    }
+
+    public function socialAccounts(){
+        return $this->hasMany(SocialAccount::class, 'user_id');
     }
 }

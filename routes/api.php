@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\Auth\LoginController;
@@ -24,6 +25,8 @@ Route::group(['prefix'=> 'v1'], function(){
     Route::post('/register', 'Auth\\RegisterController@register');
     Route::post('forgot-password/email', 'Auth\\ForgotPasswordController@sendResetLinkEmail');
     Route::post('password/reset', 'Auth\\ResetPasswordController@reset');
+    Route::get('login/{provider}', 'Auth\\SocialAuthController@redirectToProvider');
+    Route::get('login/{provider}/callback', 'Auth\\SocialAuthController@handleProviderCallback');
 
     Route::group([ 'middleware'=>['auth:sanctum'] ], function(){
 
@@ -33,7 +36,7 @@ Route::group(['prefix'=> 'v1'], function(){
         // });
 
         Route::get('/user', function (Request $request) {
-            return response()->json($request->user());
+            return response()->json(new UserResource($request->user()));
         });
         Route::post('/logout', 'Auth\\LoginController@logout');
 
@@ -44,6 +47,11 @@ Route::group(['prefix'=> 'v1'], function(){
     // });
     Route::apiResource('posts', 'PostController');
     Route::get('blog/posts/{post:slug}', 'PostController@show');
+    Route::post('posts/like/{post}', 'PostController@like');
+    // Route::post('posts/un-like/{post}', 'PostController@unlike');
+    Route::post('posts/{post}/comments', 'PostController@comment');
+    Route::post('posts/{post}/comments/{comment}/reply', 'PostController@reply');
+
     Route::get('user/posts', 'PostController@userPosts');
     Route::get('user/posts/trashed', 'PostController@getTrashedPost');
     Route::put('user/posts/restore/{id}', 'PostController@restore');
