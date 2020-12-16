@@ -39,7 +39,8 @@ class PostController extends Controller
             ->category()
             ->searched()
             ->withLikesCount()
-            ->paginate(2)
+            ->latest()
+            ->paginate(6)
         );
     }
 
@@ -222,18 +223,6 @@ class PostController extends Controller
         return (new PostResource($post) )->response()->setStatusCode(200);
     }
 
-    public function comment(Request $request, Post $post){
-        // print $post;
-        $validatedData = Validator::make($request->all(), [
-            'comment' => 'required'
-        ])->validate();
-        $comment = $post->comments()->create([
-                        'user_id' => $request->user()->id,
-                        'comments' => $validatedData['comment']
-                    ]);
-        PostCommented::dispatch($comment);
-        return (new CommentResource($comment) )->response()->setStatusCode(200);
-    }
 
     
 }

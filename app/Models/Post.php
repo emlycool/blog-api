@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Traits\Likeable;
 use Laravel\Scout\Searchable;
@@ -38,6 +39,10 @@ class Post extends Model
 
     public function user(){
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function isPublished(){
+        return Carbon::parse($this->publish_at)->isBefore(now()); 
     }
 
     public function scopePublished($query){
@@ -97,13 +102,23 @@ class Post extends Model
         return $array;
     }
 
+    /**
+     * Determine if the model should be searchable.
+     *
+     * @return bool
+     */
+    public function shouldBeSearchable()
+    {
+        return $this->isPublished();
+    }
+
     
     /**
      * Get all of the post's comments.
      */
     public function comments()
     {
-        return $this->morphMany(Comment::class, 'commentable');
+        return $this->morphMany(Comment::class, 'commentable')->whereNull('parent_id');
     }
 
     

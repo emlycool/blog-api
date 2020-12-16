@@ -11,25 +11,22 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class PostCommented implements ShouldBroadcast
+class PostCommentReplied implements shouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $comment;
 
+    public $comment;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    
     public function __construct($comment)
     {
-        // $this->comment = $comment;
+        $this->comment = ( new CommentResource($comment) )->resolve();
         // $this->comment->user;
         // $this->comment->replies;
-        $this->comment = ( new CommentResource($comment) )->resolve();
-
         $this->dontBroadcastToCurrentUser();
     }
 
@@ -41,9 +38,9 @@ class PostCommented implements ShouldBroadcast
     public function broadcastOn()
     {
         // $commentable = $this->comment->commentable;
+        $commentable = $this->comment['commentable'];
 
         // return new Channel('comments-'.$commentable->slug);
-        return new Channel('comments-'.$this->comment['commentable']['slug']);
-
+        return new Channel('comments-'.$commentable['slug']);
     }
 }

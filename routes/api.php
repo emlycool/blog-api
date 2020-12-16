@@ -47,10 +47,20 @@ Route::group(['prefix'=> 'v1'], function(){
     // });
     Route::apiResource('posts', 'PostController');
     Route::get('blog/posts/{post:slug}', 'PostController@show');
-    Route::post('posts/like/{post}', 'PostController@like');
-    // Route::post('posts/un-like/{post}', 'PostController@unlike');
-    Route::post('posts/{post}/comments', 'PostController@comment');
-    Route::post('posts/{post}/comments/{comment}/reply', 'PostController@reply');
+    Route::group(['prefix' => 'posts'], function(){
+        Route::post('like/{post}', 'PostController@like');
+        // Route::post('un-like/{post}', 'PostController@unlike');
+        Route::get('{post:slug}/comments', 'CommentController@getPostComments');
+        Route::post('{post}/comments', 'CommentController@commentPost');
+        Route::post('{post}/comments/{comment}/reply', 'CommentController@replyCommentPost');
+    });
+
+    // Route::get('blog/posts/{post:slug}', 'PostController@show');
+    // Route::post('posts/like/{post}', 'PostController@like');
+    // // Route::post('posts/un-like/{post}', 'PostController@unlike');
+    // Route::get('posts/comments', 'CommentController@getPostComments');
+    // Route::post('posts/{post}/comments', 'CommentController@commentPost');
+    // Route::post('posts/{post}/comments/{comment}/reply', 'CommentController@replyCommentPost');
 
     Route::get('user/posts', 'PostController@userPosts');
     Route::get('user/posts/trashed', 'PostController@getTrashedPost');
