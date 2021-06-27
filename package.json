@@ -22,5 +22,9 @@
         "sass-loader": "^8.0.0",
         "vue": "^2.5.17",
         "vue-template-compiler": "^2.6.10"
+    },
+    "dependencies": {
+        "quill-image-drop-module": "^1.0.3",
+        "quill-image-resize-module": "^3.0.0"
     }
 }

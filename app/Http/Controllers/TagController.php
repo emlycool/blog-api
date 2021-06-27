@@ -54,7 +54,7 @@ class TagController extends Controller
     public function update(Request $request, Tag $tag)
     {
         $request->validate([
-            'name' => "string|required|unique:categories,name,{$tag->id}"
+            'name' => "string|required|unique:tags,name,{$tag->id}"
         ]);
         $tag->update($request->only('name'));
         return (new TagResource($tag))->response()->setStatusCode(200);

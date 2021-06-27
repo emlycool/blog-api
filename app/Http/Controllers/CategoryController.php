@@ -9,7 +9,7 @@ use App\Http\Resources\CategoryResource;
 class CategoryController extends Controller
 {
     public function __contruct(){
-        $this->middleware(['auth:sanctum', 'auth:admin'])->except(['index', 'show']);
+        $this->middleware(['auth:sanctum', 'auth.admin'])->except(['index', 'show']);
     }
 
     /**

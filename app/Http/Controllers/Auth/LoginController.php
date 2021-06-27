@@ -58,7 +58,7 @@ class LoginController extends Controller
                     ? new JsonResponse([
                         'message' => 'logged in successfully',
                         'user' => new UserResource($request->user())
-                    ], 201)
+                    ], 200)
                     : redirect()->intended($this->redirectPath());
     }
 

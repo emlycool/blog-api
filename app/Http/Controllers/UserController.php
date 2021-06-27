@@ -16,7 +16,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $this->authorize('viewAny', $user);
+        $this->authorize('viewAny', User::class);
         return new UserCollection(User::paginate());
     }
 

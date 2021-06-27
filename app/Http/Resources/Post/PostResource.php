@@ -36,7 +36,7 @@ class PostResource extends JsonResource
 
     public function mapImages(){
         $images = $this->images instanceof Collection ? $this->images : Collection::make($this->images);
-        return collect($images)->map( function ($image){
+        return $images->map( function ($image){
             return  secure_asset('storage/'.$image);
         })->toArray();
     }

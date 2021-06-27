@@ -147,10 +147,10 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($post)
     {
         // delete post model binding cant work for trash posts
-        // $post = Post::withTrashed()->where('id', $id)->firstorfail();
+        $post = Post::withTrashed()->where('id', $post)->firstorfail();
 
         $this->authorize('delete', $post);
         
@@ -203,9 +203,11 @@ class PostController extends Controller
             array_push($deletedImagePaths, $imagePath);
 
         }
+        // $imagesNotDeleted = collect($post->images)
+        //                             ->filter( fn ($imagePath) => !in_array($imagePath, $deletedImagePaths) )
+        //                             ->toArray();
         $imagesNotDeleted = collect($post->images)
-                                    ->filter( fn ($imagePath) => !in_array($imagePath, $deletedImagePaths) )
-                                    ->toArray();
+                                ->diff($deletedImagePaths)->all();
 
         $post->images = $imagesNotDeleted;
         $post->save();

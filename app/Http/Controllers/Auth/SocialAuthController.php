@@ -9,6 +9,7 @@ use App\Models\SocialAccount;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\UnauthorizedException;
 use Laravel\Socialite\Facades\Socialite;
 
 
@@ -33,7 +34,11 @@ class SocialAuthController extends Controller
      */
     public function handleProviderCallback($provider)
     {
-        $socialiteUser = Socialite::driver($provider)->stateless()->user();
+        try {
+            $socialiteUser = Socialite::driver($provider)->stateless()->user();
+        } catch (\Throwable $th) {
+            return response()->json(['failed' => $th->getMessage()], 400);
+        }
 
         $appUser = User::firstOrCreate(
             [

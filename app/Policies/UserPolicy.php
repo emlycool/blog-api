@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
@@ -24,6 +25,7 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
+        Log::info($user);
         return $user->is_admin;
     }
 

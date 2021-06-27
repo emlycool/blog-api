@@ -20,11 +20,9 @@ class Post extends Model
 
     protected $casts = [
         'images' => 'array',
+        'published_at' => 'datetime'
     ];
 
-    protected $dates = [
-        'published_at'
-    ];
 
     protected $guarded = [];
 
